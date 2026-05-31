@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE LAST NODE // CORE_v1.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-ana: #060b14;
+            --bg-panel: #0a1324;
+            --kenar: #1a2c4c;
+            --vurgu: #00f2ff;
+            --hata: #ff3333;
+            --yazi: #d7e7d1;
+        }
+
+        body { 
+            font-family: 'JetBrains Mono', monospace; 
+            background-color: var(--bg-ana); 
+            color: var(--yazi); 
+            user-select: none; 
+            overflow: hidden; 
+        }
+
+        .ferah-yazi { line-height: 2 !important; letter-spacing: 0.05em; }
+        
+        .glitch-efekt { text-shadow: 2px 0 red, -2px 0 blue; animation: titreme 0.1s infinite; }
+        @keyframes titreme { 
+            0% { transform: translate(0) } 
+            25% { transform: translate(-2px, 1px) } 
+            50% { transform: translate(1px, -1px) } 
+            75% { transform: translate(-1px, 2px) } 
+            100% { transform: translate(0) } 
+        }
+
+        ::-webkit-scrollbar { width: 6px; } 
+        ::-webkit-scrollbar-track { background: var(--bg-ana); } 
+        ::-webkit-scrollbar-thumb { background: var(--kenar); }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col text-xs md:text-sm">
+
+    <div class="flex flex-1 w-full h-full overflow-hidden">
+
+        <aside id="sidebar" class="w-56 md:w-64 border-r hidden flex-col z-40 transition-colors duration-300" style="background-color: var(--bg-panel); border-color: var(--kenar);">
+            <div class="p-5 md:p-6 border-b" style="border-color: var(--kenar);">
+                <h2 class="font-bold text-base md:text-lg mb-1 tracking-wider" style="color: var(--vurgu);">SYSTEM_RESOURCES</h2>
+                <p id="sb-theme-name" class="text-[10px] md:text-xs font-bold" style="color: var(--yazi);">DIŞ_AĞ_GEÇİDİ</p>
+                <p class="text-[10px] mt-2" style="color: var(--kenar);">OP: Operator Profile</p>
+            </div>
+            
+            <nav class="flex-1 py-3 flex flex-col gap-1">
+                <button onclick="UI.showMenu()" class="text-left px-5 py-3 transition-colors duration-200 tracking-wide font-bold hover:bg-opacity-50 text-xs md:text-sm" style="color: var(--yazi);" onmouseover="this.style.color='var(--vurgu)'; this.style.backgroundColor='var(--kenar)';" onmouseout="this.style.color='var(--yazi)'; this.style.backgroundColor='transparent';">> ANA TERMİNAL</button>
+                <button onclick="UI.showLevelSelect()" class="text-left px-5 py-3 font-bold tracking-wide shadow-[inset_4px_0_0_0_#fff] text-xs md:text-sm" style="background-color: var(--vurgu); color: #051105;">> AĞ HARİTASI</button>
+                <button class="text-left px-5 py-3 cursor-not-allowed tracking-wide font-bold text-xs md:text-sm" style="color: var(--kenar);">> KARABORSA (KİLİTLİ)</button>
+                <button class="text-left px-5 py-3 cursor-not-allowed tracking-wide font-bold text-xs md:text-sm" style="color: var(--kenar);">> SİSTEM AYARLARI</button>
+            </nav>
+            
+            <div class="p-5 md:p-6 border-t" style="border-color: var(--kenar);">
+                <button onclick="UI.showBriefing()" class="w-full text-left font-bold transition-opacity tracking-wide hover:opacity-70 text-xs md:text-sm" style="color: var(--vurgu);">> TERMİNAL_BRİFİNGİ</button>
+            </div>
+        </aside>
+
+        <main id="main-content" class="flex-1 relative flex flex-col transition-colors duration-300 overflow-hidden" style="background-color: var(--bg-ana);">
+            
+            <div id="view-prologue" class="hidden absolute inset-0 bg-[#010308] z-50 flex flex-col items-center justify-center p-6 md:p-8">
+                <div id="prologue-text" class="text-base md:text-lg text-center max-w-3xl ferah-yazi whitespace-pre-wrap font-bold" style="color: var(--vurgu);"></div>
+                <button onclick="UI.skipPrologue()" class="absolute bottom-6 right-6 font-bold hover:opacity-80 tracking-widest text-xs md:text-sm" style="color: var(--kenar);">ATLA >></button>
+            </div>
+
+            <div id="view-menu" class="hidden flex-1 flex flex-col justify-between p-6 md:p-8" style="background-color: #09160a;">
+                <div class="flex justify-between items-center text-[10px] md:text-xs tracking-widest font-bold">
+                    <span style="color: #39ff14;">SYSTEM_STATUS: STABLE ●</span>
+                    <span id="sys-clock" style="color: #3c4b35;">SYS_CLOCK: 00:00:00</span>
+                </div>
+                
+                <div class="flex flex-col items-center justify-center flex-1">
+                    <img src="screen.png" alt="The Last Node" class="w-28 h-28 md:w-40 md:h-40 mb-6 object-contain rounded-xl shadow-[0_0_30px_rgba(57,255,20,0.15)]">
+                    
+                    <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-3" style="font-family: 'Sora', sans-serif; color: #39ff14;">THE LAST NODE</h1>
+                    <p class="text-xs md:text-sm mb-6 tracking-widest font-bold" style="color: #ffaa00;">― J O S E P H U S  P R O T O C O L // C O R E _ v 1 . 0 ―</p>
+                    
+                    <div class="border w-full max-w-xl md:max-w-2xl mb-6" style="background-color: #121f11; border-color: #3c4b35;">
+                        <div class="px-4 py-2" style="background-color: #3c4b35;">
+                            <span class="font-bold text-[10px]" style="color: #39ff14;">TERMINAL_FEED</span>
+                        </div>
+                        <div class="p-6 ferah-yazi text-left text-[10px] md:text-xs font-bold" style="color: #d7e7d1;">
+                            > KÜRESEL AĞ ÇÖKÜŞÜNE SAATLER KALDI.<br>
+                            > 'The Last Node' adlı kontrolden çıkmış yapay zeka, tüm<br>
+                            > dünya sistemlerini geri dönülemez bir karantinaya alıyor.<br>
+                            > Sistem, kaba kuvvetle kırılamayan Josephus kilitleriyle mühürlü.<br>
+                            ><br>
+                            > Dünya dijital bir karanlığa gömülmek üzereyken, VertexWhile<br>
+                            > topluluğu son bir hamleyle DTA-27 Otonom Sızma Birimini (❖) üretti.<br>
+                            > GÖREV: Birimi ağa entegre et. 90 düğümü aş ve sistemin fişini çek. █
+                        </div>
+                    </div>
+
+                    <button onclick="UI.showLevelSelect()" class="px-8 py-3 md:px-14 md:py-4 text-base md:text-xl font-bold transition-all duration-300 tracking-wider hover:bg-white hover:text-black" style="background-color: #39ff14; color: #051105; box-shadow: 0 0 15px rgba(57,255,20,0.4);">
+                        ⚡ SİSTEME SIZ
+                    </button>
+                </div>
+                
+                <div class="flex justify-between items-end text-[8px] md:text-[10px] tracking-widest mt-auto font-bold" style="color: #3c4b35;">
+                    <div class="flex items-center gap-3">
+                        <img src="vertex_logo.png" alt="VertexWhile" class="w-8 h-8 md:w-10 md:h-10 object-contain">
+                        <div>DEVELOPED BY<br><span class="font-bold text-xs md:text-sm" style="color: #d7e7d1;">VertexWhile</span></div>
+                    </div>
+                    <div class="text-right">CONNECTION<br><span class="font-bold text-xs md:text-sm" style="color: #39ff14;">ENCRYPTED_SSL_V3</span></div>
+                </div>
+            </div>
+
+            <div id="view-levels" class="hidden flex-1 flex flex-col p-6 md:p-8 overflow-hidden">
+                <div class="flex justify-between items-end border-b pb-3 mb-6" style="border-color: var(--kenar);">
+                    <div>
+                        <h1 id="theme-title" class="text-3xl md:text-4xl font-bold font-sans uppercase tracking-tighter" style="color: var(--vurgu);">DIŞ AĞ GEÇİDİ</h1>
+                        <p id="theme-subtitle" class="mt-2 font-bold tracking-widest text-[10px] md:text-xs" style="color: var(--kenar);">> SİSTEM DURUMU: SIZILIYOR // SEKTÖR 1</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-xl md:text-2xl mb-1" id="gold-display" style="color: #ffaa00;">🪙 0 Gold</p>
+                        <p class="text-[10px] font-bold tracking-widest" style="color: var(--kenar);">VERİ TABANI AKTİF</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center flex-1 gap-4 md:gap-8 overflow-y-auto">
+                    <button onclick="UI.prevPage()" class="text-3xl md:text-4xl hover:opacity-70 transition-opacity" style="color: var(--kenar);">◀</button>
+                    
+                    <div class="border p-6 md:p-8 shadow-2xl rounded-sm" style="background-color: var(--bg-panel); border-color: var(--kenar);">
+                        <div id="level-grid" class="grid grid-cols-6 gap-3 md:gap-4">
+                            </div>
+                    </div>
+
+                    <button onclick="UI.nextPage()" class="text-3xl md:text-4xl hover:opacity-70 transition-opacity" style="color: var(--kenar);">▶</button>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t flex justify-between items-center text-[10px] md:text-xs font-bold tracking-widest" style="border-color: var(--kenar);">
+                    <button onclick="saveSystem.reset()" class="hover:text-white transition-colors" style="color: var(--hata);">[KAYITLARI_SIFIRLA]</button>
+                    <span style="color: var(--kenar);">THE LAST NODE // CORE_v1.0</span>
+                </div>
+            </div>
+
+            <div id="view-briefing" class="hidden flex-1 flex flex-col p-6 md:p-8 overflow-y-auto">
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tighter mb-3" style="color: var(--vurgu);">SİSTEM_KILAVUZU // OPERASYON BRİFİNGİ</h1>
+                <p class="font-bold tracking-widest mb-5 text-[10px] md:text-xs" style="color: var(--hata);">> DİKKAT: AŞAĞIDAKİ VERİLER GİZLİDİR. YALNIZCA YETKİLİ PERSONEL İÇİNDİR.</p>
+                
+                <div class="border p-6 md:p-8 flex flex-col gap-6" style="background-color: var(--bg-panel); border-color: var(--kenar);">
+                    <div>
+                        <h3 class="font-bold text-base md:text-lg mb-2" style="color: var(--vurgu);">[ANA GÖREV] - OPERASYON HEDEFİ</h3>
+                        <p class="ferah-yazi text-xs md:text-sm font-bold" style="color: var(--yazi);">Hedefimiz net: Josephus İmha Protokolü başladığında, ağdaki düğümler belirli bir atlama kuralına göre sırayla çökmeye başlar. Görevin, sistem tamamen yok olmadan önce ayakta kalacak 'Son Düğümü' (❖) önceden hesaplamak ve VertexWhile otonom birimini o güvenli noktaya yerleştirmektir. Yanlış düğümü seçersen, birimimiz ağla birlikte imha olur.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base md:text-lg mb-2" style="color: var(--vurgu);">[PARAMETRE: N] - AĞ DÜĞÜMLERİ</h3>
+                        <p class="ferah-yazi text-xs md:text-sm font-bold" style="color: var(--yazi);">Ağdaki toplam aktif bağlantı (taş) sayısını ifade eder. Simülasyon ilerledikçe sistem genişler. Her 2 seviyede bir ağa yeni düğümler eklenir (Maksimum 27 düğüm). Düğüm sayısı arttıkça, son hayatta kalanı bulmak için yapman gereken hesaplama daha da zorlaşır.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base md:text-lg mb-2" style="color: var(--vurgu);">[PARAMETRE: K] - ATLAMA ADIMI</h3>
+                        <p class="ferah-yazi text-xs md:text-sm font-bold" style="color: var(--yazi);">Güvenlik duvarının hedef şaşırtma algoritmasıdır. Bir düğüm imha edildikten sonra, otonom birimimiz sıradaki hedefi bulmak için K kadar adım atlar. Atlamalar sabit görünse de, her seviyede farklı bir kriptografik döngüye girerek seni yanıltmaya çalışır.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base md:text-lg mb-2" style="color: var(--vurgu);">[KRİTİK DURUM] - ZAMAN AŞIMI VE ZORLUK İVMESİ</h3>
+                        <p class="ferah-yazi text-xs md:text-sm font-bold" style="color: var(--yazi);">Zamanla yarışıyorsun. İlerleyen seviyelerde güvenlik sistemleri seni fark ettikçe saniyeler daralır. Hızlı bir şekilde sağ üstteki canlı hesaplama modülünü kullanmalı ve sistemin imha edemeyeceği 'Son Düğümü' (❖) süren bitmeden işaretlemelisin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-cutscene" class="hidden absolute inset-0 bg-[#010308] z-50 flex flex-col items-center justify-center p-6 md:p-8">
+                <div id="cutscene-text" class="text-base md:text-lg text-center max-w-3xl whitespace-pre-wrap mb-6 ferah-yazi min-h-[120px] font-bold" style="color: var(--kenar);"></div>
+                
+                <div class="relative w-full max-w-[700px] aspect-[21/9] border bg-black flex items-center justify-center overflow-hidden" style="border-color: var(--kenar);">
+                    <canvas id="csCanvas" width="900" height="400" class="w-full h-full object-contain"></canvas>
+                </div>
+
+                <button onclick="Game.startGame(Engine.pendingLevel)" class="absolute bottom-6 right-6 font-bold tracking-widest hover:opacity-80 text-xs md:text-sm" style="color: var(--kenar);">ATLA >></button>
+            </div>
+
+            <div id="view-game" class="hidden flex-1 flex p-4 md:p-6 gap-4 md:gap-6 overflow-hidden">
+                <div class="flex-1 border flex flex-col overflow-hidden relative" style="background-color: var(--bg-panel); border-color: var(--kenar);">
+                    <div class="p-3 md:p-4 border-b flex justify-between items-center text-[10px] md:text-xs font-bold tracking-widest shrink-0" style="border-color: var(--kenar);">
+                        <button onclick="UI.showLevelSelect()" class="hover:text-white" style="color: var(--vurgu);">◀ SEVİYE SEÇİMİ</button>
+                        <span style="color: var(--kenar);"> | </span>
+                        <span id="game-level-indicator" style="color: var(--yazi);">LEVEL --/90</span>
+                        <span class="ml-auto" style="color: var(--kenar);">SİS_TUVL_01</span>
+                    </div>
+                    
+                    <div class="flex-1 relative flex justify-center items-center overflow-hidden p-4" style="background-color: var(--bg-ana);" id="canvas-container">
+                        <canvas id="gameCanvas" width="500" height="500" class="w-full h-full max-w-[500px] max-h-[500px] object-contain"></canvas>
+                        
+                        <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                            <button id="btn-start-dungeon" class="pointer-events-auto text-[#291800] px-8 py-3 md:px-10 md:py-4 text-base md:text-xl font-bold shadow-xl hover:bg-white transition-colors tracking-widest border-2" style="background-color: #ffaa00; border-color: #ffaa00;">
+                                🚀 ZİNDANI BAŞLAT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-56 md:w-64 flex flex-col gap-4 shrink-0">
+                    <div class="border p-4 md:p-5 text-center" style="background-color: var(--bg-panel); border-color: var(--kenar);">
+                        <p class="text-[10px] md:text-xs font-bold mb-2 tracking-widest" style="color: var(--kenar);">İMHAYA_KALAN_SÜRE</p>
+                        <p id="hud-time" class="text-3xl md:text-4xl font-bold" style="color: #ffaa00;">⏳ -- SN</p>
+                    </div>
+
+                    <div class="border p-4 md:p-5 flex-1 flex flex-col" style="background-color: var(--bg-panel); border-color: var(--kenar);">
+                        <p class="text-[10px] md:text-xs font-bold mb-4 tracking-widest" style="color: var(--vurgu);">CANLI HESAPLAMA</p>
+                        
+                        <div class="border p-3 mb-4" style="background-color: var(--bg-ana); border-color: var(--kenar);">
+                            <p class="text-[8px] md:text-[10px] mb-1 font-bold tracking-wider" style="color: var(--kenar);">ALGORİTMA_V2</p>
+                            <p id="hud-formula" class="font-bold text-xs md:text-sm tracking-wide" style="color: var(--yazi);">(İndeks + K - 1) MOD Kalan</p>
+                        </div>
+                        
+                        <div class="flex gap-3 mb-4">
+                            <div class="flex-1 border p-3 text-center" style="background-color: var(--bg-ana); border-color: var(--kenar);">
+                                <p class="text-[8px] md:text-[10px] mb-1 font-bold tracking-wider" style="color: var(--kenar);">ADIM(K)</p>
+                                <p id="hud-k" class="text-2xl md:text-3xl font-bold" style="color: var(--vurgu);">--</p>
+                            </div>
+                            <div class="flex-1 border p-3 text-center" style="background-color: var(--bg-ana); border-color: var(--kenar);">
+                                <p class="text-[8px] md:text-[10px] mb-1 font-bold tracking-wider" style="color: var(--kenar);">KALAN</p>
+                                <p id="hud-remain" class="text-2xl md:text-3xl font-bold" style="color: var(--yazi);">--</p>
+                            </div>
+                        </div>
+                        
+                        <p id="hud-sysmsg" class="text-[10px] md:text-xs mt-auto text-center font-bold tracking-widest" style="color: var(--kenar);">Başlatma Bekleniyor...</p>
+                    </div>
+
+                    <div id="hud-death-box" class="border p-4 md:p-5 text-center transition-colors" style="background-color: var(--bg-ana); border-color: var(--hata);">
+                        <p class="text-[10px] md:text-xs font-bold mb-2 tracking-widest" style="color: var(--hata);">SON DÜŞEN DÜĞÜM</p>
+                        <p id="hud-dead" class="text-3xl md:text-4xl font-bold" style="color: var(--hata);">💀 --</p>
+                        <p id="hud-reward" class="text-[10px] md:text-xs mt-2 font-bold tracking-wide" style="color: var(--yazi);"></p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+<script>
+    // --- BÖLÜM 1: TEMA VE HAFIZA ---
+    const TEMALAR = [
+        { isim: "DIŞ_AĞ_GEÇİDİ", alt_baslik: "> SİSTEM DURUMU: SIZILIYOR // SEKTÖR 1", bg_ana: "#060b14", bg_panel: "#0a1324", kenar: "#1a2c4c", vurgu: "#00f2ff", hata: "#ff3333" },
+        { isim: "SAVUNMA_HATTI", alt_baslik: "> YÖNLENDİRME: AKTİF // GÜVENLİK DUVARI", bg_ana: "#140a00", bg_panel: "#241300", kenar: "#4a2600", vurgu: "#ffaa00", hata: "#d92626" },
+        { isim: "KARANTİNA_X", alt_baslik: "DURUM: KARANTİNAYA ALINDI // BOZUK SEKTÖR", bg_ana: "#09160a", bg_panel: "#121f11", kenar: "#3c4b35", vurgu: "#39ff14", hata: "#d92626" },
+        { isim: "MUTLAK_ÇEKİRDEK", alt_baslik: "SEKTÖR: DERİN KARANTİNA // ERİŞİM REDDEDİLDİ", bg_ana: "#140000", bg_panel: "#240000", kenar: "#4a0000", vurgu: "#ff2a2a", hata: "#5e0000" },
+        { isim: "SİSTEM_HİÇLİĞİ", alt_baslik: "DURUM: GERÇEKLİK_HATASI // YAPISAL ÇÖKÜŞ", bg_ana: "#0d0014", bg_panel: "#180024", kenar: "#2d004a", vurgu: "#bf00ff", hata: "#ff3333" }
+    ];
+
+    const GAME_STATE = {
+        page: 0, level: 1, gold: 0, isFirstTime: true,
+        unlocked: Array(90).fill(false), completed: Array(90).fill(false)
+    };
+    GAME_STATE.unlocked[0] = true;
+
+    const saveSystem = {
+        load() {
+            const data = localStorage.getItem('vertex_save');
+            if(data) {
+                const parsed = JSON.parse(data);
+                GAME_STATE.gold = parsed.gold || 0;
+                GAME_STATE.isFirstTime = parsed.isFirstTime ?? true;
+                GAME_STATE.unlocked = parsed.unlocked || GAME_STATE.unlocked;
+                GAME_STATE.completed = parsed.completed || GAME_STATE.completed;
+            }
+        },
+        save() {
+            localStorage.setItem('vertex_save', JSON.stringify({
+                gold: GAME_STATE.gold, isFirstTime: GAME_STATE.isFirstTime,
+                unlocked: GAME_STATE.unlocked, completed: GAME_STATE.completed
+            }));
+        },
+        reset() {
+            GAME_STATE.unlocked = Array(90).fill(false); GAME_STATE.unlocked[0] = true;
+            GAME_STATE.completed = Array(90).fill(false);
+            GAME_STATE.gold = 0; GAME_STATE.isFirstTime = true;
+            this.save(); UI.showMenu();
+        }
+    };
+
+    function applyTheme(idx) {
+        const t = TEMALAR[idx];
+        const root = document.documentElement;
+        root.style.setProperty('--bg-ana', t.bg_ana); 
+        root.style.setProperty('--bg-panel', t.bg_panel);
+        root.style.setProperty('--kenar', t.kenar); 
+        root.style.setProperty('--vurgu', t.vurgu);
+        root.style.setProperty('--hata', t.hata);
+        
+        document.getElementById('theme-title').innerText = t.isim;
+        document.getElementById('theme-subtitle').innerText = t.alt_baslik;
+        document.getElementById('sb-theme-name').innerText = t.isim;
+    }
+
+    // --- BÖLÜM 2: JOSEPHUS MOTORU ---
+    const Engine = {
+        n: 0, k: 0, time: 0,
+        nodes: [], currentIndex: 0, stepCount: 0, targetNode: null, pendingLevel: 1,
+
+        seviye_belirle(level) {
+            let n = 5 + Math.floor(level / 2);
+            let k = 2 + Math.floor(level / 8) + ((level + 1) % 2);
+            let sure = Math.max(5, 20 - Math.floor(level / 3));
+            return { n: n, k: k, sure: sure };
+        },
+
+        zindani_kur(n, k, hedef_tas) {
+            this.n = n; this.k = k; this.targetNode = hedef_tas;
+            this.nodes = Array.from({length: n}, (_, i) => i + 1);
+            this.currentIndex = 0; this.stepCount = 0;
+        },
+
+        siradaki_adimi_hesapla() {
+            let kalan_sayi = this.nodes.length;
+            let eski_indeks = this.currentIndex;
+            
+            this.currentIndex = (eski_indeks + this.k - 1) % kalan_sayi;
+            let dusen_tas_no = this.nodes.splice(this.currentIndex, 1)[0];
+            
+            let durum = "DEVAM", basari_yuzdesi = 0, son_kalan = null;
+
+            if (dusen_tas_no === this.targetNode) {
+                durum = "KAYBETTIN"; 
+                basari_yuzdesi = Math.floor((this.stepCount / (this.n - 1)) * 100);
+            } else if (this.nodes.length === 1) {
+                durum = "KAZANDIN"; 
+                basari_yuzdesi = 100; 
+                son_kalan = this.nodes[0];
+            } else { 
+                this.stepCount++; 
+            }
+
+            return { kalan_sayi, eski_indeks, hesaplanan_indeks: this.currentIndex, dusen_tas_no, durum, basari_yuzdesi, son_kalan };
+        }
+    };
+
+    // --- BÖLÜM 3: ARAYÜZ (UI) ---
+    let typeWriterInterval = null;
+    let cutsceneAnimFrames = [];
+
+    const UI = {
+        hideAll() {
+            ['view-prologue', 'view-menu', 'view-levels', 'view-briefing', 'view-cutscene', 'view-game', 'sidebar'].forEach(id => {
+                document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex');
+            });
+            clearInterval(typeWriterInterval);
+            cutsceneAnimFrames.forEach(cancelAnimationFrame); cutsceneAnimFrames = [];
+        },
+
+        showMenu() {
+            this.hideAll(); applyTheme(0);
+            document.getElementById('view-menu').classList.remove('hidden'); document.getElementById('view-menu').classList.add('flex');
+        },
+
+        showLevelSelect() {
+            this.hideAll(); applyTheme(GAME_STATE.page);
+            document.getElementById('sidebar').classList.remove('hidden'); document.getElementById('sidebar').classList.add('flex');
+            document.getElementById('view-levels').classList.remove('hidden'); document.getElementById('view-levels').classList.add('flex');
+            document.getElementById('gold-display').innerText = `🪙 ${GAME_STATE.gold} Gold`;
+            this.renderGrid();
+        },
+
+        showBriefing() {
+            this.hideAll();
+            document.getElementById('sidebar').classList.remove('hidden'); document.getElementById('sidebar').classList.add('flex');
+            document.getElementById('view-briefing').classList.remove('hidden'); document.getElementById('view-briefing').classList.add('flex');
+        },
+
+        renderGrid() {
+            const grid = document.getElementById('level-grid'); grid.innerHTML = '';
+            let start = GAME_STATE.page * 18;
+            const t = TEMALAR[GAME_STATE.page];
+            
+            for(let i = 0; i < 18; i++) {
+                let levelNo = start + i + 1;
+                let isUnl = GAME_STATE.unlocked[start + i], isCmp = GAME_STATE.completed[start + i];
+                let btn = document.createElement('button');
+                
+                // Ekrandan taşmasın diye %33 küçültülmüş buton boyutları
+                btn.className = "w-12 h-12 md:w-16 md:h-16 border flex items-center justify-center font-bold text-lg md:text-2xl relative transition-all duration-300 ";
+                
+                if(isCmp) {
+                    btn.style.backgroundColor = t.bg_ana; btn.style.borderColor = t.vurgu; btn.style.color = t.vurgu;
+                    btn.innerHTML = `${levelNo} <span class="absolute bottom-1 right-1 text-[8px] md:text-[10px]">✓</span>`;
+                    btn.onclick = () => this.loadLevel(levelNo);
+                    btn.onmouseover = () => { btn.style.backgroundColor = t.vurgu; btn.style.color = "#000"; };
+                    btn.onmouseout = () => { btn.style.backgroundColor = t.bg_ana; btn.style.color = t.vurgu; };
+                } else if(isUnl) {
+                    btn.style.backgroundColor = t.vurgu; btn.style.borderColor = t.vurgu; btn.style.color = "#000";
+                    btn.style.boxShadow = `0 0 10px ${t.vurgu}`;
+                    btn.innerText = levelNo;
+                    btn.onclick = () => this.loadLevel(levelNo);
+                    btn.onmouseover = () => { btn.style.backgroundColor = "#fff"; };
+                    btn.onmouseout = () => { btn.style.backgroundColor = t.vurgu; };
+                } else {
+                    btn.style.backgroundColor = t.bg_ana; btn.style.borderColor = t.kenar; btn.style.color = t.kenar;
+                    btn.style.cursor = "not-allowed";
+                    btn.innerHTML = `${levelNo} <span class="absolute bottom-1 right-1 text-[8px] md:text-[10px] font-sans">🔒</span>`;
+                }
+                grid.appendChild(btn);
+            }
+        },
+
+        nextPage() { if(GAME_STATE.page < 4) { GAME_STATE.page++; this.showLevelSelect(); } },
+        prevPage() { if(GAME_STATE.page > 0) { GAME_STATE.page--; this.showLevelSelect(); } },
+
+        loadLevel(levelNo) {
+            GAME_STATE.level = levelNo; GAME_STATE.page = Math.floor((levelNo - 1) / 18);
+            Engine.pendingLevel = levelNo; applyTheme(GAME_STATE.page);
+            
+            if ([1, 19, 37, 55, 73].includes(levelNo)) this.playCutscene(GAME_STATE.page);
+            else Game.startGame(levelNo);
+        },
+
+        playCutscene(tIdx) {
+            this.hideAll();
+            document.getElementById('view-cutscene').classList.remove('hidden'); document.getElementById('view-cutscene').classList.add('flex');
+            
+            const t = TEMALAR[tIdx], txt = document.getElementById('cutscene-text');
+            const cvs = document.getElementById('csCanvas'), ctx = cvs.getContext('2d');
+            const cx = cvs.width / 2, cy = cvs.height / 2;
+            
+            ctx.clearRect(0,0, cvs.width, cvs.height); txt.innerText = ""; 
+            txt.className = "text-base md:text-lg text-center max-w-3xl whitespace-pre-wrap mb-8 ferah-yazi min-h-[120px] font-bold";
+            txt.style.color = t.kenar;
+
+            if (tIdx === 0) { 
+                this.typeWriter("VERTEXWHILE OTONOM KEŞİF BİRİMİ BAŞLATILIYOR...\n\nDIŞ AĞA BAĞLANILIYOR...", txt, 40, () => {
+                    setTimeout(() => {
+                        let rX = 50, wColor = t.kenar, rColor = t.vurgu, shake = 0, state = 0;
+                        function drawT1() {
+                            ctx.clearRect(0,0, cvs.width, cvs.height);
+                            ctx.fillStyle = rColor; ctx.font = "bold 60px 'JetBrains Mono'"; ctx.fillText("❖", rX, cy + 20);
+                            ctx.fillStyle = wColor; ctx.fillRect(650 + shake, cy - 80, 40, 160);
+                            
+                            if(state === 0) {
+                                rX += 15;
+                                if(rX >= 600) { 
+                                    state = 1; rX = 600; wColor = t.hata; rColor = t.hata; 
+                                    txt.classList.add("glitch-efekt"); txt.style.color = t.hata;
+                                    txt.innerText = "KRİTİK UYARI: Dış ağ geçidi tek parça bir duvar değil!\n\n18 kademeli dinamik Josephus kilidi tespit edildi.\n\nOtonom kaba kuvvet (brute-force) başarısız.\n\nDüğüm Algoritmasının manuel çözülmesi gerekiyor.";
+                                }
+                            } else if (state === 1) { shake = Math.random()*10 - 5; }
+                            
+                            let id = requestAnimationFrame(drawT1); cutsceneAnimFrames.push(id);
+                        }
+                        drawT1();
+                        setTimeout(() => { cutsceneAnimFrames.forEach(cancelAnimationFrame); Game.startGame(Engine.pendingLevel); }, 6000);
+                    }, 500);
+                });
+            } else if (tIdx === 1) { 
+                this.typeWriter("Dış ağ aşıldı.\n\nDerin sistem taraması başlatılıyor...", txt, 40, () => {
+                    txt.style.color = t.vurgu; let angle = 0;
+                    function drawRadar() {
+                        ctx.clearRect(0,0, cvs.width, cvs.height);
+                        ctx.beginPath(); ctx.arc(cx, cy, 150, 0, Math.PI*2); ctx.strokeStyle = t.kenar; ctx.lineWidth=2; ctx.stroke();
+                        let rx = cx + 150 * Math.cos(angle), ry = cy + 150 * Math.sin(angle);
+                        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(rx, ry); ctx.strokeStyle = t.vurgu; ctx.stroke();
+                        if(Math.random() > 0.8) {
+                            ctx.beginPath(); ctx.arc(cx + (Math.random()*280-140), cy + (Math.random()*280-140), 5, 0, Math.PI*2);
+                            ctx.fillStyle = t.hata; ctx.fill();
+                        }
+                        angle += 0.1; let id = requestAnimationFrame(drawRadar); cutsceneAnimFrames.push(id);
+                    }
+                    drawRadar();
+                    setTimeout(() => {
+                        cutsceneAnimFrames.forEach(cancelAnimationFrame); ctx.clearRect(0,0, cvs.width, cvs.height);
+                        txt.style.color = t.hata;
+                        txt.innerText = "TEHLİKE: İZİNSİZ GİRİŞ TESPİT EDİLDİ! SAVUNMA HATTI UYANDI.\n\nÜzerimize doğru gelen 18 aktif Avcı Yazılım sürüsü var.\n\nİmha edilmeden önce bu 18 düğümün zayıf noktalarını hesapla.";
+                        setTimeout(() => { Game.startGame(Engine.pendingLevel); }, 6000);
+                    }, 3000);
+                });
+            } else if (tIdx === 2) { 
+                let glTicks = 60;
+                function drawGlitch() {
+                    ctx.clearRect(0,0,cvs.width,cvs.height);
+                    let rx = cx + (Math.random()*40-20), ry = cy + (Math.random()*40-20);
+                    ctx.fillStyle = Math.random() > 0.5 ? t.hata : t.vurgu;
+                    ctx.font = "bold 80px 'JetBrains Mono'"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("❖", rx, ry);
+                    ctx.fillStyle = t.kenar; ctx.fillRect(cx + (Math.random()*400-200), cy + (Math.random()*200-100), Math.random()*50, Math.random()*10);
+                    glTicks--;
+                    if(glTicks > 0) {
+                        let id = setTimeout(() => requestAnimationFrame(drawGlitch), 50); cutsceneAnimFrames.push(id);
+                    } else {
+                        ctx.clearRect(0,0,cvs.width,cvs.height); ctx.fillStyle = t.hata; ctx.fillText("❖", cx, cy); txt.style.color = t.hata;
+                        txt.innerText = "SİSTEM ÇÖKÜŞÜ: BOZUK VE VİRÜSLÜ ESKİ BİR SEKTÖRE GİRİŞ YAPILDI.\n\nBuradaki düğümler mantık dışı çalışıyor ve sürekli veri sızdırıyor.\n\nÇekirdeğe ulaşmak için bu 18 ölü düğümü temizlemek zorundasın.";
+                        setTimeout(() => { Game.startGame(Engine.pendingLevel); }, 6000);
+                    }
+                }
+                drawGlitch();
+            } else if (tIdx === 3) { 
+                let size = 50, growing = true, ticks = 20;
+                function drawHeartbeat() {
+                    ctx.clearRect(0,0, cvs.width, cvs.height);
+                    ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI*2); ctx.fillStyle = t.vurgu; ctx.fill();
+                    ctx.beginPath(); ctx.arc(cx, cy, size, 0, Math.PI*2); ctx.strokeStyle = t.hata; ctx.lineWidth = 3; ctx.stroke();
+                }
+                let hbInt = setInterval(() => {
+                    size = growing ? 80 : 50; growing = !growing; drawHeartbeat(); ticks--;
+                    if(ticks <= 0) {
+                        clearInterval(hbInt); ctx.clearRect(0,0, cvs.width, cvs.height);
+                        ctx.fillStyle = "#010308"; ctx.strokeStyle = t.vurgu; ctx.lineWidth = 5;
+                        ctx.fillRect(cx - 200, cy - 80, 400, 160); ctx.strokeRect(cx - 200, cy - 80, 400, 160);
+                        ctx.fillStyle = t.vurgu; ctx.font = "bold 30px 'Arial Black'"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("ERİŞİM REDDEDİLDİ", cx, cy);
+                        txt.style.color = t.hata;
+                        txt.innerText = "HEDEF LOKASYON: SİSTEMİN KALBİ.\n\nAna işlemci, kusursuz bir mimariyle örülmüş 18 kriptografik düğümle korunuyor.\n\nYapacağın tek bir matematik hatası birimimizi sonsuza dek ağdan silecektir.";
+                        setTimeout(() => { Game.startGame(Engine.pendingLevel); }, 6500);
+                    }
+                }, 150);
+            } else if (tIdx === 4) { 
+                txt.innerText = "Çekirdek baypas edildi...\n\nBeklenmeyen sistem yanıtı..."; txt.style.color = t.yazi;
+                setTimeout(() => {
+                    txt.innerText = ""; let rbTicks = 40, rbInt = setInterval(() => {
+                        document.getElementById('view-cutscene').style.backgroundColor = [t.kenar, t.hata, "#000", "#010308"][Math.floor(Math.random()*4)];
+                        for(let i=0; i<3; i++) {
+                            ctx.beginPath(); ctx.moveTo(Math.random()*900, Math.random()*400); ctx.lineTo(Math.random()*900, Math.random()*400);
+                            ctx.strokeStyle = t.vurgu; ctx.lineWidth = Math.random()*5; ctx.stroke();
+                        }
+                        rbTicks--;
+                        if(rbTicks <= 0) {
+                            clearInterval(rbInt); document.getElementById('view-cutscene').style.backgroundColor = "#010308"; ctx.clearRect(0,0,cvs.width,cvs.height);
+                            txt.style.color = t.vurgu;
+                            txt.innerText = "DİKKAT! SİSTEM KENDİNİ İMHA EDİYOR.\n\nAğ kendi içine çöküyor. Modüler kurallar yıkıldı.\n\nÇöken bu hiçlikten kaçmak ve otonom birimi kurtarmak için 18 boyutlu çıkış rotasını hesapla!";
+                            setTimeout(() => { Game.startGame(Engine.pendingLevel); }, 6500);
+                        }
+                    }, 100);
+                }, 2000);
+            }
+        },
+
+        startPrologue() {
+            this.hideAll(); document.getElementById('view-prologue').classList.remove('hidden'); document.getElementById('view-prologue').classList.add('flex');
+            const txt = document.getElementById('prologue-text');
+            const story = `> KÜRESEL AĞ ÇÖKÜŞÜNE SAATLER KALDI...\n\n> 'The Last Node' adlı kontrolden çıkmış yapay zeka, tüm\n> dünya sistemlerini geri dönülemez bir karantinaya alıyor.\n> Sistem, kaba kuvvetle kırılamayan Josephus kilitleriyle mühürlü.\n\n> Dünya dijital bir karanlığa gömülmek üzereyken, VertexWhile\n> topluluğu son bir hamleyle DTA-27 Otonom Sızma Birimini üretti.\n\n> GÖREV: Birimi ağa entegre et. 90 düğümü aş ve sistemin fişini çek.`;
+            this.typeWriter(story, txt, 40, () => { setTimeout(() => { UI.showMenu(); }, 3000); });
+        },
+
+        skipPrologue() { clearInterval(typeWriterInterval); this.showMenu(); },
+
+        typeWriter(text, element, speed, callback) {
+            let i = 0; element.textContent = ""; clearInterval(typeWriterInterval);
+            typeWriterInterval = setInterval(() => {
+                if (i < text.length) { 
+                    element.textContent = text.substring(0, i + 1); 
+                    i++; 
+                } 
+                else { clearInterval(typeWriterInterval); if(callback) callback(); }
+            }, speed);
+        }
+    };
+
+    // --- BÖLÜM 4: OYUN (ZİNDAN) ÇİZİM MOTORU ---
+    const Game = {
+        canvas: null, ctx: null, centerX: 250, centerY: 250, radius: 180, // Çizim boyutları daraltıldı
+        nodes: [], targetChosen: false, timerId: null, animId: null,
+
+        startGame(levelNo) {
+            UI.hideAll(); applyTheme(GAME_STATE.page);
+            document.getElementById('sidebar').classList.remove('hidden'); document.getElementById('sidebar').classList.add('flex');
+            document.getElementById('view-game').classList.remove('hidden'); document.getElementById('view-game').classList.add('flex');
+            document.getElementById('game-level-indicator').innerText = `LEVEL ${levelNo}/90`;
+            
+            this.canvas = document.getElementById('gameCanvas'); this.ctx = this.canvas.getContext('2d'); this.targetChosen = false;
+            const config = Engine.seviye_belirle(levelNo);
+            Engine.k = config.k; Engine.n = config.n; Engine.time = config.sure;
+            
+            this.updateHUD(config.n, config.k, config.sure, "--", "💀 --", "var(--yazi)");
+            
+            let btn = document.getElementById('btn-start-dungeon');
+            btn.innerText = "🚀 ZİNDANI BAŞLAT";
+            btn.style.display = "block";
+            btn.style.backgroundColor = "#ffaa00"; btn.style.borderColor = "#ffaa00"; btn.style.color = "#291800";
+            btn.style.boxShadow = "none";
+            btn.onclick = () => this.initDungeon(); 
+            
+            document.getElementById('hud-sysmsg').innerText = "Başlatma Bekleniyor...";
+            this.clearCanvas();
+        },
+
+        initDungeon() {
+            document.getElementById('btn-start-dungeon').style.display = "none";
+            document.getElementById('hud-sysmsg').innerText = "Hedefleme aktif. Bir düğüm seçin.";
+            this.targetChosen = false; clearInterval(this.timerId); cancelAnimationFrame(this.animId);
+            
+            this.nodes = [];
+            let nodeRadius = Math.max(10, Math.min(22, (2 * Math.PI * this.radius) / Engine.n / 2 - 4));
+            
+            for(let i=0; i<Engine.n; i++) {
+                let angle = (2 * Math.PI / Engine.n) * i - (Math.PI / 2);
+                let x = this.centerX + this.radius * Math.cos(angle), y = this.centerY + this.radius * Math.sin(angle);
+                this.nodes.push({ id: i+1, x, y, r: nodeRadius, active: true, isTarget: false });
+            }
+            this.drawCanvas(); this.startTimer();
+        },
+
+        startTimer() {
+            document.getElementById('hud-time').innerText = `⏳ ${Engine.time} SN`; document.getElementById('hud-time').style.color = "#ffaa00";
+            this.timerId = setInterval(() => {
+                if(this.targetChosen) return clearInterval(this.timerId);
+                Engine.time--; let timeEl = document.getElementById('hud-time');
+                timeEl.innerText = `⏳ ${Engine.time} SN`;
+                if (Engine.time <= 3) timeEl.style.color = "var(--hata)";
+                if(Engine.time <= 0) {
+                    clearInterval(this.timerId); this.targetChosen = true; 
+                    document.getElementById('hud-sysmsg').innerText = "ZAMAN AŞIMI! SİSTEM ÇÖKTÜ."; document.getElementById('hud-sysmsg').style.color = "var(--hata)";
+                    this.showRetryButton();
+                }
+            }, 1000);
+        },
+
+        drawCanvas(robotX = this.centerX, robotY = this.centerY) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); const t = TEMALAR[GAME_STATE.page];
+            this.ctx.beginPath(); this.ctx.arc(this.centerX, this.centerY, this.radius, 0, 2*Math.PI);
+            this.ctx.setLineDash([5, 10]); this.ctx.strokeStyle = t.kenar; this.ctx.stroke(); this.ctx.setLineDash([]);
+
+            this.nodes.forEach(node => {
+                if(!node.active) return;
+                this.ctx.beginPath(); this.ctx.arc(node.x, node.y, node.r, 0, 2*Math.PI);
+                this.ctx.fillStyle = node.isTarget ? t.vurgu : t.bg_ana; this.ctx.fill();
+                this.ctx.lineWidth = node.isTarget ? 3 : 1; this.ctx.strokeStyle = node.isTarget ? "#fff" : t.vurgu; this.ctx.stroke();
+                this.ctx.fillStyle = node.isTarget ? "#000" : "#d7e7d1";
+                this.ctx.font = "bold 12px 'JetBrains Mono'"; this.ctx.textAlign = "center"; this.ctx.textBaseline = "middle";
+                this.ctx.fillText(node.id, node.x, node.y);
+            });
+
+            this.ctx.fillStyle = t.vurgu; this.ctx.font = "bold 36px 'JetBrains Mono'"; this.ctx.fillText("❖", robotX, robotY);
+        },
+
+        clearCanvas() { this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); },
+
+        handleNodeClick(event) {
+            if(this.targetChosen || Engine.time <= 0) return;
+            const rect = this.canvas.getBoundingClientRect(), scaleX = this.canvas.width / rect.width, scaleY = this.canvas.height / rect.height;
+            const mouseX = (event.clientX - rect.left) * scaleX, mouseY = (event.clientY - rect.top) * scaleY;
+
+            for(let node of this.nodes) {
+                if(Math.hypot(mouseX - node.x, mouseY - node.y) <= node.r) {
+                    this.targetChosen = true; clearInterval(this.timerId); node.isTarget = true;
+                    Engine.zindani_kur(Engine.n, Engine.k, node.id);
+                    document.getElementById('hud-sysmsg').innerText = "ROBOT HEDEFE KİLİTLENDİ. İMHA BAŞLIYOR.";
+                    document.getElementById('hud-sysmsg').style.color = "var(--vurgu)";
+                    this.animateRobotToNode(node); break;
+                }
+            }
+        },
+
+        animateRobotToNode(targetNode) {
+            let startX = this.centerX, startY = this.centerY, steps = 15, currentStep = 0;
+            const move = () => {
+                currentStep++; let curX = startX + ((targetNode.x - startX) * (currentStep / steps)), curY = startY + ((targetNode.y - startY) * (currentStep / steps));
+                this.drawCanvas(curX, curY);
+                if(currentStep < steps) this.animId = requestAnimationFrame(move); else setTimeout(() => this.executeJosephusStep(), 500);
+            };
+            move();
+        },
+
+        executeJosephusStep() {
+            let res = Engine.siradaki_adimi_hesapla();
+            let t = TEMALAR[GAME_STATE.page];
+            let deadNodeObj = this.nodes.find(n => n.id === res.dusen_tas_no);
+            if(deadNodeObj) deadNodeObj.active = false;
+            
+            let formula = `(${res.eski_indeks.toString().padStart(2,'0')} + ${Engine.k.toString().padStart(2,'0')} - 1) MOD ${res.kalan_sayi.toString().padStart(2,'0')}`;
+            this.updateHUD(res.kalan_sayi - 1, Engine.k, Engine.time, formula, `💀 ${res.dusen_tas_no}`, "var(--hata)");
+            this.drawCanvas(deadNodeObj.x, deadNodeObj.y); 
+
+            if (res.durum === "KAYBETTIN") {
+                document.getElementById('hud-sysmsg').innerText = "SİSTEM ÇÖKTÜ. AĞ İMHA EDİLDİ."; document.getElementById('hud-sysmsg').style.color = "var(--hata)";
+                let earned = Engine.stepCount * 5; GAME_STATE.gold += earned;
+                document.getElementById('hud-reward').innerText = `Hayatta Kalma: %${res.basari_yuzdesi} (+${earned} Altın)`;
+                saveSystem.save(); this.showRetryButton();
+            } else if (res.durum === "KAZANDIN") {
+                document.getElementById('hud-sysmsg').innerText = "DÜĞÜM GÜVENCEYE ALINDI. AĞ TEMİZLENDİ."; document.getElementById('hud-sysmsg').style.color = "var(--vurgu)";
+                let earned = (Engine.n * 5) + 50; GAME_STATE.gold += earned;
+                document.getElementById('hud-reward').innerText = `Temizleme: %100 (+${earned} Altın Bonus)`;
+                
+                GAME_STATE.completed[GAME_STATE.level - 1] = true;
+                if(GAME_STATE.level < 90) GAME_STATE.unlocked[GAME_STATE.level] = true;
+                saveSystem.save();
+                
+                let btn = document.getElementById('btn-start-dungeon');
+                btn.innerText = "▶ SONRAKİ LEVEL";
+                btn.style.backgroundColor = t.vurgu; btn.style.color = "#000"; btn.style.borderColor = t.vurgu;
+                btn.style.boxShadow = `0 0 15px ${t.vurgu}`;
+                btn.style.display = "block";
+                btn.onclick = () => UI.loadLevel(GAME_STATE.level + 1);
+                
+                let survivorObj = this.nodes.find(n => n.id === res.son_kalan);
+                this.drawCanvas(survivorObj.x, survivorObj.y);
+            } else {
+                let speed = Math.max(50, 800 - (Engine.n * 20));
+                setTimeout(() => this.executeJosephusStep(), speed);
+            }
+        },
+
+        updateHUD(remain, k, time, formula, deadText, deadColor) {
+            document.getElementById('hud-remain').innerText = remain.toString().padStart(2, '0');
+            document.getElementById('hud-k').innerText = k.toString().padStart(2, '0');
+            document.getElementById('hud-formula').innerText = formula;
+            document.getElementById('hud-dead').innerText = deadText;
+            document.getElementById('hud-dead').style.color = deadColor;
+            document.getElementById('hud-death-box').style.borderColor = deadColor;
+        },
+
+        showRetryButton() {
+            let btn = document.getElementById('btn-start-dungeon');
+            btn.innerText = "🔄 TEKRAR DENE";
+            btn.style.display = "block";
+            btn.style.backgroundColor = "var(--hata)"; btn.style.color = "#fff"; btn.style.borderColor = "var(--hata)";
+            btn.style.boxShadow = `0 0 15px var(--hata)`;
+            btn.onclick = () => this.initDungeon();
+        }
+    };
+
+    document.getElementById('gameCanvas').addEventListener('mousedown', (e) => Game.handleNodeClick(e));
+
+    setInterval(() => {
+        let now = new Date();
+        let ms = Math.floor(now.getMilliseconds() / 10).toString().padStart(2, '0');
+        document.getElementById('sys-clock').innerText = `SYS_CLOCK: ${now.toLocaleTimeString()}:${ms}`;
+    }, 45);
+
+    window.onload = () => {
+        saveSystem.load();
+        if(GAME_STATE.isFirstTime) {
+            GAME_STATE.isFirstTime = false; saveSystem.save(); UI.startPrologue();
+        } else { UI.showMenu(); }
+    };
+
+</script>
+</body>
+</html>
