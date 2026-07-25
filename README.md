@@ -1,6 +1,7 @@
 # ❖ THE LAST NODE // CORE_v1.0
-🇬🇧
+
 <img src="screen.png" alt="The Last Node Cover" width="400">
+🇬🇧
 
 🌍 **[PLAY NOW](https://enesozkanilici.github.io/TheLastNode/)**
 
