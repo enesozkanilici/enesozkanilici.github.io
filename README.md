@@ -39,6 +39,7 @@ Algorithm & Core System: Enes Özkanalıcı
 Design & Porting: VertexWhile Team
 # ❖ THE LAST NODE // CORE_v1.0
 Türkçe
+
 🌍 **[HEMEN OYNA](https://enesozkanilici.github.io/TheLastNode/)**
 
 ---
