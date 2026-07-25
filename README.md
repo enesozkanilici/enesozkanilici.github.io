@@ -1,6 +1,42 @@
+
 # ❖ THE LAST NODE // CORE_v1.0
 
-![The Last Node Cover](screen.png)
+<img src="screen.png" alt="The Last Node Cover" width="400">
+
+🌍 **[PLAY NOW](https://enesozkanilici.github.io/TheLastNode/)**
+
+---
+
+> **"Hours left until the global network collapse. As the world plunges into digital darkness, the VertexWhile community has produced one final countermeasure: the DTA-27 Autonomous Infiltration Unit. Mission: Integrate the unit into the network, bypass 90 nodes, and pull the plug on the system."**
+
+**THE LAST NODE** is a fully browser-based (HTML5/JS) dynamic puzzle and algorithm game that transforms the ancient mathematical **Josephus Problem** into a cyberpunk survival dungeon. A **VertexWhile** product.
+
+### ⚡ Features
+* **Mathematical Core:** All game dynamics rely on a sequential node destruction (Josephus) algorithm calculated using modular arithmetic.
+* **Dynamic Difficulty:** Over 90 levels, N (Node Count) and K (Step Count) values increase through a specific modular structure based on the learning curve, rather than randomly.
+* **5 Different Cyberpunk Themes:** Outer Gateway, Defense Line, Quarantine_X, Absolute Core, and System Void.
+* **Thematic Crisis Cinematics:** Custom HTML5 Canvas animations depicting radar scans, system glitches, and reality fractures that activate in the first level of each theme.
+* **Responsive Design:** An interface that fully adapts to any screen size (100% browser ratio) with zero overflow, built using Tailwind CSS.
+* **Local Storage:** Completed levels and collected gold are instantly saved to the browser's local storage.
+
+### 🚀 Gameplay & Installation
+The project is a Single Page Application (SPA) requiring no server or dependency installation. You can play it directly via your browser:
+
+🎮 **[Play The Last Node via GitHub Pages](https://enesozkanilici.github.io/TheLastNode/)**# ❖ THE LAST NODE // CORE_v1.0
+
+🛠️ Technical Architecture
+This project was initially prototyped as a heavy desktop application (Python/Tkinter), and was later entirely ported to Web technologies (HTML5 Canvas & JS) to achieve performance optimizations and overcome memory leak issues.
+
+User Interface: HTML5, Tailwind CSS
+
+Game Engine: Vanilla JavaScript, HTML5 Canvas API
+
+Data Management: LocalStorage API
+
+👨‍💻 Developer & Team
+Algorithm & Core System: Enes Özkanalıcı
+
+Design & Porting: VertexWhile Team
 
 🌍 **[HEMEN OYNA](https://enesozkanilici.github.io/TheLastNode/)**
 
