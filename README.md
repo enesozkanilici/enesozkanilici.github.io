@@ -1,7 +1,7 @@
 # ❖ THE LAST NODE // CORE_v1.0
 
 <img src="screen.png" alt="The Last Node Cover" width="400">
-🇬🇧
+English
 
 🌍 **[PLAY NOW](https://enesozkanilici.github.io/TheLastNode/)**
 
@@ -38,7 +38,7 @@ Algorithm & Core System: Enes Özkanalıcı
 
 Design & Porting: VertexWhile Team
 # ❖ THE LAST NODE // CORE_v1.0
-🇹🇷
+Türkçe
 🌍 **[HEMEN OYNA](https://enesozkanilici.github.io/TheLastNode/)**
 
 ---
